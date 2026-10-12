@@ -1,11 +1,84 @@
-<div align="center">
+# Tithi's Henna Artwork 🌸
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+> **Deployed By — MD. ISTIAK ISLAM**
 
-  <h1>Built with AI Studio</h2>
+১০০% কেমিক্যালমুক্ত বিশুদ্ধ রাজস্থানি সোজাত অর্গানিক মেহেদি, ব্রাইডাল কোণ ও রাজশাহী শহরের প্রফেশনাল হোম সার্ভিস সম্বলিত আধুনিক ই-কমার্স ও পোর্টফোলিও ওয়েব অ্যাপ্লিকেশন।
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+---
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## 🌟 প্রধান সুবিধাসমূহ (Key Features)
 
-</div>
+- **অনলাইন প্রি-অর্ডার ও চেকআউট:** ক্যাশ অন ডেলিভারি, বিকাশ ও নগদ পেমেন্ট অপশন।
+- **পিক-আপ / কালেক্ট অন সাইট (Collect on Site):** মহিলা কলেজ রোড, হেতেম খাঁ স্টুডিও থেকে সরাসরি ফ্রি সংগ্রহ (৳০)।
+- **হোম ডেলিভারি:** রাজশাহী শহরে ডোরস্টেপ হোম ডেলিভারি (৳৬০) এবং সারাদেশে এক্সপ্রেস কুরিয়ার (৳১৩০)।
+- **সরাসরি হোয়াটসঅ্যাপ ও ইমেইল নোটিফিকেশন:** প্রি-অর্ডার করার সাথে সাথে স্বয়ংক্রিয়ভাবে নোটিফিকেশন তিতির হোয়াটসঅ্যাপ নম্বর (`01601-176076`) এবং ইমেইল (`jinnatislamtithi@gmail.com`)-এ প্রেরণের সুব্যবস্থা।
+- **ফ্লোটিং হোয়াটসঅ্যাপ বাটন:** স্ক্রিনের কোনায় সার্বক্ষণিক লাইভ চ্যাট উইজেট।
+- **কাস্টমার লাইভ ফটো স্লাইডার:** লাইভ ফলাফল গ্যালারি, কাস্টম এক্সটার্নাল লিংক এবং ব্রাউজার থেকেই ছবি ও লিংক সম্পাদনার জন্য স্লাইডার ম্যানেজার।
+- **গুণমান ও স্টেন বিজ্ঞান:** ০% PPD, প্রাকৃতিক উপাদান ও ৪৮ ঘণ্টার পিক ডার্ক মেহগনি রঙ পরিবর্তনের বিশ্লেষণ।
+- **বাংলা সংখ্যা ও মূল্য ব্যবস্থা:** প্রতিটি পণ্য ও হিসাব খাঁটি বাংলা অঙ্কে প্রদর্শিত।
+- **পোর্টফোলিও ইন্সপিরেশন:** ব্রাইডাল হেভি, এরাবিক ও ম্যান্ডালা ডিজাইন শোকেস।
+- **গ্রাহক রিভিউ ও লাইভ ট্র্যাকিং:** ভেরিফায়েড রিভিউ সাবমিশন ও রিয়েল-টাইম অর্ডার ট্র্যাকিং।
+
+---
+
+## 👤 প্রোফাইল ও যোগাযোগের তথ্য (Contact Details)
+
+- **শিল্পী / উদ্যোক্তা:** তিতি (Jinnat Islam Tithi) · Professional Henna Artist
+- **প্রতিষ্ঠান:** University of Rajshahi
+- **হটলাইন / মোবাইল:** `01601-176076`
+- **হোয়াটসঅ্যাপ:** `+880 1601-176076`
+- **ইমেইল:** `jinnatislamtithi@gmail.com`
+- **ইনস্টাগ্রাম:** `@tithishennaartwork`
+- **স্টুডিও ঠিকানা:** মহিলা কলেজ রোড, হেতেম খাঁ, রাজশাহী, বাংলাদেশ
+- **সার্ভিস এলাকা:** পুরো রাজশাহী শহর ও সারাদেশে হোম ডেলিভারি
+
+---
+
+## 🛠️ প্রযুক্তি স্ট্যাক (Tech Stack)
+
+- **Framework:** React 19 + TypeScript
+- **Styling:** Tailwind CSS v4 + Hind Siliguri Typography
+- **Icons:** Lucide React
+- **Animations:** CSS Keyframe Micro-interactions & Tailwind Transitions
+- **Storage:** LocalStorage Persistence for Cart, Slides, Reviews & Orders
+- **Build Tool:** Vite 8
+
+---
+
+## 🚀 লোকাল সেটআপ ও রান করার নিয়ম (Getting Started)
+
+```bash
+# ১. ডিপেন্ডেন্সি ইনস্টল করুন
+npm install
+
+# ২. ডেভেলপমেন্ট সার্ভার চালু করুন
+npm run dev
+
+# ৩. প্রোডাকশন বিল্ড তৈরি করুন
+npm run build
+```
+
+---
+
+## 📤 গিটহাব রিপোজিটরিতে আপলোড করার কমান্ড (Push to GitHub)
+
+আপনার গিটহাবে **`Tithis-Henna-Artwork`** নামে একটি নতুন রিপোজিটরি তৈরি করে টার্মিনালে নিচের কমান্ডগুলো রান করুন:
+
+```bash
+# গিট ইনিশিয়ালাইজ করুন (যদি পূর্বে না করা থাকে)
+git init
+git add .
+git commit -m "Initial commit: Tithi's Henna Artwork deployed by MD. ISTIAK ISLAM"
+
+# আপনার গিটহাব রিপোজিটরির রিমোট লিংক যোগ করুন
+git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/Tithis-Henna-Artwork.git
+
+# মেইন ব্রাঞ্চ পুশ করুন
+git branch -M main
+git push -u origin main
+```
+
+---
+
+**Deployed By — MD. ISTIAK ISLAM**  
+*Crafted for Tithi's Henna Artwork · Rajshahi, Bangladesh*
