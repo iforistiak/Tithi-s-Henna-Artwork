@@ -1,603 +1,286 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ExternalLink, Plus, Edit3, Trash2, Maximize2, X, RotateCcw, Check, Sparkles } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Maximize2,
+  X,
+  Sparkles,
+  Pause,
+  Play,
+  CheckCircle2,
+  Clock,
+  MapPin,
+  Heart
+} from 'lucide-react';
 import { CustomerSlide } from '../types/henna';
-import { INITIAL_SLIDES, customerBridalImg, heroHennaImg, productConesImg } from '../data/hennaData';
+import { CUSTOMER_SLIDES } from '../data/hennaData';
+import { toBengaliNumber } from '../utils/bengali';
 
 interface CustomerSliderProps {
-  slides: CustomerSlide[];
-  onUpdateSlides: (newSlides: CustomerSlide[]) => void;
+  slides?: CustomerSlide[];
 }
 
-export const CustomerSlider: React.FC<CustomerSliderProps> = ({ slides, onUpdateSlides }) => {
+export const CustomerSlider: React.FC<CustomerSliderProps> = ({
+  slides = CUSTOMER_SLIDES,
+}) => {
+  const activeSlides = slides && slides.length > 0 ? slides : CUSTOMER_SLIDES;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoplay, setIsAutoplay] = useState(true);
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
-  
-  // Manager modal state
-  const [isManagerOpen, setIsManagerOpen] = useState(false);
-  const [editingSlideId, setEditingSlideId] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
 
-  // Form states for adding/editing slide
-  const [formName, setFormName] = useState('');
-  const [formOccasion, setFormOccasion] = useState('');
-  const [formStainDay, setFormStainDay] = useState('');
-  const [formImageUrl, setFormImageUrl] = useState('');
-  const [formCustomLink, setFormCustomLink] = useState('');
-  const [formLinkText, setFormLinkText] = useState('');
-  const [formCaption, setFormCaption] = useState('');
-  const [managerMessage, setManagerMessage] = useState<string | null>(null);
+  const SLIDE_DURATION = 5000; // 5 seconds per slide
 
-  // Autoplay effect
+  // Autoplay progression timer
   useEffect(() => {
-    if (!isAutoplay || slides.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % slides.length);
-    }, 4500);
-    return () => clearInterval(interval);
-  }, [isAutoplay, slides.length]);
+    if (!isAutoplay || activeSlides.length <= 1) {
+      setProgress(0);
+      return;
+    }
+
+    const intervalTime = 50; // update progress every 50ms
+    const step = (intervalTime / SLIDE_DURATION) * 100;
+
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          setCurrentIndex((curr) => (curr + 1) % activeSlides.length);
+          return 0;
+        }
+        return prev + step;
+      });
+    }, intervalTime);
+
+    return () => clearInterval(timer);
+  }, [isAutoplay, activeSlides.length, currentIndex]);
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % slides.length);
+    setProgress(0);
+    setCurrentIndex((prev) => (prev + 1) % activeSlides.length);
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    setProgress(0);
+    setCurrentIndex((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
   };
 
-  const currentSlide = slides[currentIndex] || slides[0];
-
-  // Open manager for a new slide
-  const handleOpenAddSlide = () => {
-    setEditingSlideId(null);
-    setFormName('');
-    setFormOccasion('উত্তরা, ঢাকা — বিয়ের অনুষ্ঠান');
-    setFormStainDay('৪৮ ঘণ্টা পর (Peak Dark Mahogany)');
-    setFormImageUrl(customerBridalImg);
-    setFormCustomLink('https://instagram.com');
-    setFormLinkText('ইনস্টাগ্রামে ছবি দেখুন');
-    setFormCaption('“অর্গানিক মেহেদির রঙ এতো নিখুঁত ও গাঢ় হয়েছে যা ভাষায় প্রকাশ করার মতো না!”');
-    setIsManagerOpen(true);
+  const goToSlide = (idx: number) => {
+    setProgress(0);
+    setCurrentIndex(idx);
   };
 
-  // Open manager to edit an existing slide
-  const handleOpenEditSlide = (slide: CustomerSlide) => {
-    setEditingSlideId(slide.id);
-    setFormName(slide.customerName);
-    setFormOccasion(slide.occasion);
-    setFormStainDay(slide.stainDay);
-    setFormImageUrl(slide.imageUrl);
-    setFormCustomLink(slide.customLink);
-    setFormLinkText(slide.linkText);
-    setFormCaption(slide.caption);
-    setIsManagerOpen(true);
-  };
-
-  // Save or update slide
-  const handleSaveSlide = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formImageUrl.trim() || !formName.trim()) {
-      alert('অনুগ্রহ করে কাস্টমার নাম ও ছবির লিংক প্রদান করুন।');
-      return;
-    }
-
-    if (editingSlideId) {
-      // Update existing
-      const updated = slides.map((s) =>
-        s.id === editingSlideId
-          ? {
-              ...s,
-              customerName: formName,
-              occasion: formOccasion,
-              stainDay: formStainDay,
-              imageUrl: formImageUrl,
-              customLink: formCustomLink,
-              linkText: formLinkText || 'লিংক দেখুন',
-              caption: formCaption,
-            }
-          : s
-      );
-      onUpdateSlides(updated);
-      setManagerMessage('স্লাইড সফলভাবে আপডেট করা হয়েছে!');
-    } else {
-      // Add new
-      const newSlide: CustomerSlide = {
-        id: `slide-${Date.now()}`,
-        customerName: formName,
-        occasion: formOccasion,
-        stainDay: formStainDay,
-        imageUrl: formImageUrl,
-        customLink: formCustomLink || 'https://instagram.com',
-        linkText: formLinkText || 'কাস্টমার পোস্ট দেখুন',
-        caption: formCaption,
-      };
-      onUpdateSlides([...slides, newSlide]);
-      setCurrentIndex(slides.length);
-      setManagerMessage('নতুন কাস্টমার ছবি স্লাইডারে যুক্ত হয়েছে!');
-    }
-
-    setTimeout(() => {
-      setManagerMessage(null);
-      setIsManagerOpen(false);
-    }, 1200);
-  };
-
-  // Delete slide
-  const handleDeleteSlide = (id: string) => {
-    if (slides.length <= 1) {
-      alert('স্লাইডারে অন্তত একটি ছবি থাকা প্রয়োজন।');
-      return;
-    }
-    if (confirm('আপনি কি এই ছবিটি স্লাইডার থেকে মুছে ফেলতে চান?')) {
-      const updated = slides.filter((s) => s.id !== id);
-      onUpdateSlides(updated);
-      setCurrentIndex(0);
-    }
-  };
-
-  // Reset to default
-  const handleResetDefaults = () => {
-    if (confirm('আপনি কি ডিফল্ট ছবিগুলোতে ফিরে যেতে চান?')) {
-      onUpdateSlides(INITIAL_SLIDES);
-      setCurrentIndex(0);
-      setIsManagerOpen(false);
-    }
-  };
+  const currentSlide = activeSlides[currentIndex] || activeSlides[0];
 
   return (
-    <section id="customer-gallery" className="py-16 sm:py-24 bg-[#FAF8F5] border-b border-stone-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="customer-gallery" className="py-20 bg-gradient-to-b from-[#FAF7F2] via-[#F6EFE6] to-[#FAF7F2] border-b border-[#E8DFD3] relative overflow-hidden">
+      {/* Decorative subtle background aura */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#801D2D]/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#C8963E]/8 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Section Header with Manager Trigger */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wider text-[#7D2935] font-semibold">
-              কাস্টমার লাইভ ফটো স্লাইডার
-            </p>
-            <h2 className="font-serif-luxury text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
-              গ্রাহকদের হাতের বাস্তব ও লাইভ মেহেদি রঙ
-            </h2>
-            <p className="text-stone-600 text-sm sm:text-base max-w-xl">
-              কোনো ফিল্টার ছাড়াই আমাদের অর্গানিক কোণের বাস্তব ফলাফল। যেকোনো সময় নতুন ছবি ও নিজস্ব ইনস্টাগ্রাম/ফেসবুক লিংক যুক্ত করা যায়।
-            </p>
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#801D2D]/10 to-[#C8963E]/15 border border-[#801D2D]/20 text-[#801D2D] text-xs font-semibold tracking-wide">
+            <Sparkles className="w-3.5 h-3.5 text-[#C8963E]" />
+            <span>গ্রাহকদের লাইভ গ্যালারি ও আসল রঙের ঝলক</span>
           </div>
 
-          {/* Action buttons: Edit/Add slides */}
-          <div className="flex items-center gap-2.5 shrink-0 self-start md:self-auto">
-            <button
-              onClick={handleOpenAddSlide}
-              className="px-4 py-2 bg-white hover:bg-stone-100 text-stone-800 border border-stone-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-            >
-              <Plus className="w-3.5 h-3.5 text-[#7D2935]" />
-              <span>নতুন ছবি ও লিংক যোগ করুন</span>
-            </button>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#2A1418] tracking-tight">
+            শতভাগ অর্গানিক মেহেদির নিখুঁত ডার্ক স্টেন
+          </h2>
 
-            <button
-              onClick={() => setIsManagerOpen(true)}
-              className="px-3.5 py-2 bg-[#7D2935]/10 hover:bg-[#7D2935]/20 text-[#7D2935] rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="সব স্লাইড ম্যানেজ ও এডিট করুন"
-            >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>স্লাইডার ম্যানেজার ({slides.length})</span>
-            </button>
-          </div>
+          <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
+            কোনো ফিল্টার ছাড়া আমাদের খাঁটি সোজাত মেহেদি কোণ ও ব্রাইডাল সার্ভিসের বাস্তব ফলাফল। প্রতিটি ছবির সাথে কাস্টমার রিভিউ ও সোশ্যাল লিংক যুক্ত রয়েছে।
+          </p>
         </div>
 
-        {/* Carousel Container */}
-        {slides.length > 0 && currentSlide && (
+        {/* Carousel Card Container */}
+        {activeSlides.length > 0 && currentSlide && (
           <div
-            className="bg-white rounded-2xl border border-stone-200/90 shadow-sm overflow-hidden"
+            className="bg-white rounded-3xl border border-[#E8DFD3] shadow-[0_12px_40px_-15px_rgba(107,29,40,0.12)] overflow-hidden transition-all duration-300"
             onMouseEnter={() => setIsAutoplay(false)}
             onMouseLeave={() => setIsAutoplay(true)}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch min-h-[500px]">
               
-              {/* Left Column: Image with Lightbox zoom */}
-              <div className="lg:col-span-7 relative bg-stone-900 min-h-[320px] sm:min-h-[420px] max-h-[520px] overflow-hidden group">
+              {/* Left Column: Image with Staining badge & controls */}
+              <div className="lg:col-span-7 relative bg-stone-950 flex items-center justify-center min-h-[360px] sm:min-h-[460px] overflow-hidden group">
                 <img
+                  key={currentSlide.id}
                   src={currentSlide.imageUrl}
                   alt={currentSlide.customerName}
-                  className="w-full h-full object-cover transition-all duration-500"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
                   referrerPolicy="no-referrer"
                 />
 
-                {/* Top Badge: Stain Time */}
-                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-amber-200 text-xs px-3 py-1.5 rounded-md font-medium border border-white/10 flex items-center gap-1.5">
-                  <Sparkles className="w-3 h-3 text-amber-300" />
+                {/* Subtle dark vignette overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
+
+                {/* Top Left Badge: Stain timeline */}
+                <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-md text-amber-200 text-xs px-3.5 py-1.5 rounded-full font-medium border border-amber-300/20 flex items-center gap-1.5 shadow-lg">
+                  <Clock className="w-3.5 h-3.5 text-amber-300" />
                   <span>{currentSlide.stainDay}</span>
                 </div>
 
-                {/* Lightbox Zoom Icon Button */}
+                {/* Top Right: Lightbox Zoom Button */}
                 <button
                   onClick={() => setLightboxImg(currentSlide.imageUrl)}
-                  className="absolute top-4 right-4 p-2 bg-black/60 hover:bg-black/80 text-white rounded-md backdrop-blur-xs transition-colors cursor-pointer"
-                  title="বড় আকারে দেখুন"
+                  className="absolute top-4 right-4 p-2.5 bg-black/70 hover:bg-black/90 text-white rounded-full backdrop-blur-md transition-all cursor-pointer border border-white/20 hover:scale-105 shadow-lg"
+                  title="বড় আকারে জুম করে দেখুন"
                 >
                   <Maximize2 className="w-4 h-4" />
                 </button>
 
-                {/* Prev / Next floating overlay controls */}
-                <div className="absolute inset-y-0 inset-x-2 flex items-center justify-between pointer-events-none">
+                {/* Slide Count Overlay in Image bottom left */}
+                <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md text-white/90 text-[11px] px-3 py-1 rounded-full border border-white/10 font-medium">
+                  {toBengaliNumber(currentIndex + 1)} / {toBengaliNumber(activeSlides.length)} স্লাইড
+                </div>
+
+                {/* Floating Left / Right Nav Arrows */}
+                <div className="absolute inset-y-0 inset-x-3 flex items-center justify-between pointer-events-none">
                   <button
                     onClick={prevSlide}
-                    aria-label="পূর্ববর্তী ছবি"
-                    className="pointer-events-auto p-2.5 rounded-full bg-white/90 hover:bg-white text-stone-900 shadow-md transition-all cursor-pointer opacity-80 hover:opacity-100 hover:scale-105"
+                    aria-label="পূর্ববর্তী স্লাইড"
+                    className="pointer-events-auto p-3 rounded-full bg-white/90 hover:bg-white text-[#801D2D] shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
                   </button>
 
                   <button
                     onClick={nextSlide}
-                    aria-label="পরবর্তী ছবি"
-                    className="pointer-events-auto p-2.5 rounded-full bg-white/90 hover:bg-white text-stone-900 shadow-md transition-all cursor-pointer opacity-80 hover:opacity-100 hover:scale-105"
+                    aria-label="পরবর্তী স্লাইড"
+                    className="pointer-events-auto p-3 rounded-full bg-white/90 hover:bg-white text-[#801D2D] shadow-lg transition-all cursor-pointer hover:scale-110 active:scale-95"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-5 h-5 stroke-[2.5]" />
                   </button>
                 </div>
               </div>
 
               {/* Right Column: Customer Story & Custom Link */}
-              <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between bg-white space-y-6">
-                <div className="space-y-4">
-                  
-                  {/* Customer Meta */}
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs uppercase tracking-wider text-[#7D2935] font-semibold">
-                        প্রকৃত গ্রাহকের অভিজ্ঞতা
-                      </span>
-                      <span className="text-xs text-stone-400 tabular-nums">
-                        {currentIndex + 1} / {slides.length}
-                      </span>
-                    </div>
+              <div className="lg:col-span-5 p-6 sm:p-10 flex flex-col justify-between bg-gradient-to-b from-white to-[#FAF7F2] space-y-6">
+                
+                <div className="space-y-5">
+                  {/* Category / Verified Pill */}
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#801D2D] bg-[#801D2D]/10 px-3 py-1 rounded-full border border-[#801D2D]/20">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#801D2D]" />
+                      <span>ভেরিফাইড কাস্টমার রিভিউ</span>
+                    </span>
 
-                    <h3 className="font-serif-luxury text-2xl font-bold text-stone-900">
+                    {/* Autoplay Status indicator button */}
+                    <button
+                      onClick={() => setIsAutoplay(!isAutoplay)}
+                      className="inline-flex items-center gap-1.5 text-[11px] font-medium text-stone-600 hover:text-[#801D2D] bg-stone-100 hover:bg-stone-200 px-2.5 py-1 rounded-md transition-colors cursor-pointer"
+                      title={isAutoplay ? 'অটো-প্লে পজ করুন' : 'অটো-প্লে চালু করুন'}
+                    >
+                      {isAutoplay ? (
+                        <>
+                          <Pause className="w-3 h-3 text-[#801D2D]" />
+                          <span>অটো-প্লে চলছে</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3 h-3 text-stone-600" />
+                          <span>অটো-প্লে বন্ধ</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Customer Name & Location */}
+                  <div>
+                    <h3 className="text-2xl sm:text-3xl font-bold text-[#2A1418] tracking-tight">
                       {currentSlide.customerName}
                     </h3>
-                    <p className="text-xs text-stone-500 font-medium">
-                      {currentSlide.occasion}
+                    <p className="text-xs sm:text-sm text-stone-500 font-medium flex items-center gap-1.5 mt-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#C8963E]" />
+                      <span>{currentSlide.occasion}</span>
                     </p>
                   </div>
 
-                  {/* Customer Quote */}
-                  <blockquote className="text-stone-700 text-sm sm:text-base leading-relaxed italic border-l-2 border-[#7D2935] pl-4 py-1">
+                  {/* Customer Testimonial Quote */}
+                  <blockquote className="relative p-4 sm:p-5 rounded-2xl bg-white border border-[#E8DFD3] text-stone-700 text-sm sm:text-[15px] leading-relaxed italic shadow-xs">
+                    <div className="absolute -top-3 left-6 px-2 bg-white text-[#801D2D] text-xs font-bold font-serif">
+                      “
+                    </div>
                     {currentSlide.caption}
                   </blockquote>
 
-                  {/* Stain Tone Verification */}
-                  <div className="p-3 bg-[#FAF8F5] rounded-xl text-xs space-y-1 text-stone-700 border border-stone-200/70">
-                    <p className="font-semibold text-stone-800">রঙের তীব্রতা ও স্থায়িত্ব:</p>
-                    <p className="text-stone-600">
-                      ১০০% সোজাত অর্গানিক উপাদানে তৈরি। কোনো রকম ডাই ছাড়া প্রাকৃতিক লসোনের আসল ফলাফল।
-                    </p>
+                  {/* Stain Guarantee Badge */}
+                  <div className="p-3.5 bg-gradient-to-r from-[#FAF7F2] to-[#F5ECE1] rounded-xl border border-[#E2D5C3] text-xs flex items-start gap-2.5">
+                    <Heart className="w-4 h-4 text-[#801D2D] shrink-0 mt-0.5 fill-[#801D2D]/20" />
+                    <div>
+                      <span className="font-semibold text-[#3D1D22]">প্রাকৃতিক লসোনের শতভাগ খাঁটি পিগমেন্ট:</span>
+                      <p className="text-stone-600 mt-0.5">
+                        কোনো ক্ষতিকারক কেমিক্যাল বা কৃত্রিম ডাই নেই। সঠিক আফটারকেয়ার নিলে রঙ ১০ থেকে ১৪ দিন স্থায়ী হয়।
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Custom Link Button & Slide Controls */}
-                <div className="space-y-4 pt-4 border-t border-stone-100">
+                {/* Bottom Actions: Custom External Link + Slider Navigation */}
+                <div className="space-y-5 pt-4 border-t border-[#E8DFD3]">
                   
-                  {/* The Custom Link required by prompt! */}
+                  {/* Custom External Link Button (Prompt Requirement) */}
                   {currentSlide.customLink && (
                     <a
                       href={currentSlide.customLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full py-3 px-4 rounded-lg bg-[#7D2935] hover:bg-[#5C1D26] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-colors shadow-2xs group"
+                      className="w-full py-3.5 px-5 rounded-xl bg-gradient-to-r from-[#801D2D] to-[#6E1424] hover:from-[#6E1424] hover:to-[#540F1B] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] group border border-amber-300/20"
                     >
                       <span>{currentSlide.linkText || 'কাস্টম লিংক দেখুন'}</span>
-                      <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      <ExternalLink className="w-4 h-4 text-amber-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </a>
                   )}
 
-                  {/* Quick Edit current slide shortcut */}
-                  <div className="flex items-center justify-between text-xs text-stone-500">
-                    <button
-                      onClick={() => handleOpenEditSlide(currentSlide)}
-                      className="hover:text-[#7D2935] flex items-center gap-1 cursor-pointer font-medium"
-                    >
-                      <Edit3 className="w-3.5 h-3.5" />
-                      <span>এই স্লাইডের তথ্য বা লিংক এডিট করুন</span>
-                    </button>
+                  {/* Interactive Thumbnails Row */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-[11px] text-stone-500">
+                      <span>অন্যান্য গ্রাহকদের ফলাফল নির্বাচন করুন:</span>
+                      <span className="text-[#801D2D] font-semibold">{toBengaliNumber(activeSlides.length)} টি ছবি</span>
+                    </div>
 
-                    <button
-                      onClick={() => setIsAutoplay(!isAutoplay)}
-                      className="hover:text-stone-800 cursor-pointer text-[11px]"
-                    >
-                      {isAutoplay ? 'অটো-প্লে চলছে (Pause)' : 'অটো-প্লে বন্ধ (Play)'}
-                    </button>
+                    <div className="flex items-center gap-2.5 overflow-x-auto pb-1 no-scrollbar">
+                      {activeSlides.map((s, idx) => (
+                        <button
+                          key={s.id}
+                          onClick={() => goToSlide(idx)}
+                          className={`relative w-14 h-14 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                            idx === currentIndex
+                              ? 'border-[#801D2D] scale-105 shadow-md ring-2 ring-[#801D2D]/20'
+                              : 'border-transparent opacity-60 hover:opacity-100 hover:border-stone-300'
+                          }`}
+                          title={s.customerName}
+                        >
+                          <img
+                            src={s.imageUrl}
+                            alt={s.customerName}
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                          {idx === currentIndex && (
+                            <div className="absolute inset-0 bg-[#801D2D]/20 pointer-events-none" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Thumbnails row */}
-                  <div className="flex items-center gap-2 overflow-x-auto pt-2 no-scrollbar">
-                    {slides.map((s, idx) => (
-                      <button
-                        key={s.id}
-                        onClick={() => setCurrentIndex(idx)}
-                        className={`w-12 h-12 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
-                          idx === currentIndex
-                            ? 'border-[#7D2935] scale-105 shadow-xs'
-                            : 'border-transparent opacity-60 hover:opacity-100'
-                        }`}
-                      >
-                        <img
-                          src={s.imageUrl}
-                          alt={s.customerName}
-                          className="w-full h-full object-cover"
-                          referrerPolicy="no-referrer"
-                        />
-                      </button>
-                    ))}
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* Lightbox Modal */}
-        {lightboxImg && (
-          <div
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setLightboxImg(null)}
-          >
-            <div className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-xl">
-              <button
-                onClick={() => setLightboxImg(null)}
-                className="absolute top-3 right-3 p-2 bg-black/60 text-white rounded-full hover:bg-black transition-colors z-10"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <img
-                src={lightboxImg}
-                alt="বড় ভিউ"
-                className="max-h-[85vh] w-auto object-contain rounded-xl"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Slider Manager & Custom Link Editor Modal */}
-        {isManagerOpen && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 shadow-xl max-h-[90vh] overflow-y-auto space-y-6">
-              
-              <div className="flex items-center justify-between border-b border-stone-200 pb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-stone-900">
-                    {editingSlideId ? 'কাস্টমার ছবি ও লিংক এডিট করুন' : 'স্লাইডারে নতুন ছবি ও কাস্টম লিংক যুক্ত করুন'}
-                  </h3>
-                  <p className="text-xs text-stone-500">
-                    ছবি, বিবরণ ও যেকোনো কাস্টম লিংক (যেমন ফেসবুক/ইনস্টাগ্রাম পোস্ট) সেভ করুন
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIsManagerOpen(false)}
-                  className="p-1.5 text-stone-400 hover:text-stone-700 rounded-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {managerMessage && (
-                <div className="p-3 bg-emerald-50 text-emerald-800 rounded-lg text-xs font-semibold flex items-center gap-2">
-                  <Check className="w-4 h-4 text-emerald-600" />
-                  <span>{managerMessage}</span>
-                </div>
-              )}
-
-              {/* Form */}
-              <form onSubmit={handleSaveSlide} className="space-y-4">
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1">
-                      গ্রাহকের নাম *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formName}
-                      onChange={(e) => setFormName(e.target.value)}
-                      placeholder="যেমন: তানজিলা ইসলাম"
-                      className="w-full px-3 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#7D2935]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1">
-                      অনুষ্ঠান / এলাকা
-                    </label>
-                    <input
-                      type="text"
-                      value={formOccasion}
-                      onChange={(e) => setFormOccasion(e.target.value)}
-                      placeholder="যেমন: ধানমন্ডি — ব্রাইডাল রিসেপশন"
-                      className="w-full px-3 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#7D2935]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1">
-                      স্টেনের সময়কাল (Stain Tag)
-                    </label>
-                    <input
-                      type="text"
-                      value={formStainDay}
-                      onChange={(e) => setFormStainDay(e.target.value)}
-                      placeholder="যেমন: ৪৮ ঘণ্টা পর (Peak Dark Mahogany)"
-                      className="w-full px-3 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#7D2935]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-stone-700 mb-1">
-                      ছবির লিংক (Image URL) *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={formImageUrl}
-                      onChange={(e) => setFormImageUrl(e.target.value)}
-                      placeholder="ইমেজ URL অথবা প্রিসেট নির্বাচন করুন"
-                      className="w-full px-3 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#7D2935]"
-                    />
-                  </div>
-                </div>
-
-                {/* Preset Image Chooser for quick test */}
-                <div>
-                  <label className="block text-[11px] text-stone-500 mb-1.5">
-                    অথবা তৈরি প্রিসেট ছবি ব্যবহার করুন:
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setFormImageUrl(customerBridalImg)}
-                      className="text-xs px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-md cursor-pointer"
-                    >
-                      ব্রাইডাল ডার্ক স্টেন
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormImageUrl(heroHennaImg)}
-                      className="text-xs px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-md cursor-pointer"
-                    >
-                      হাতে আঁকা মেহেদি নকশা
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setFormImageUrl(productConesImg)}
-                      className="text-xs px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-md cursor-pointer"
-                    >
-                      ফ্রেশ কোণ ডিসপ্লে
-                    </button>
-                  </div>
-                </div>
-
-                {/* Custom Link Fields (Prompt requirement) */}
-                <div className="p-3.5 bg-stone-50 rounded-xl border border-stone-200 space-y-3">
-                  <p className="text-xs font-bold text-stone-800 flex items-center gap-1.5">
-                    <ExternalLink className="w-3.5 h-3.5 text-[#7D2935]" />
-                    <span>কাস্টম লিংক কনফিগারেশন (Custom External Link)</span>
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-stone-600 mb-1">
-                        কাস্টম লিংক URL (ওয়েবসাইট / ইনস্টাগ্রাম / ফেসবুক)
-                      </label>
-                      <input
-                        type="url"
-                        value={formCustomLink}
-                        onChange={(e) => setFormCustomLink(e.target.value)}
-                        placeholder="https://instagram.com/yourpost"
-                        className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#7D2935] bg-white"
+                  {/* Autoplay Progress Bar */}
+                  {isAutoplay && (
+                    <div className="w-full bg-stone-200/80 h-1 rounded-full overflow-hidden">
+                      <div
+                        className="bg-gradient-to-r from-[#801D2D] to-[#C8963E] h-full transition-all duration-75"
+                        style={{ width: `${progress}%` }}
                       />
                     </div>
+                  )}
 
-                    <div>
-                      <label className="block text-xs font-medium text-stone-600 mb-1">
-                        বাটন লেবেল (লিংকের নাম)
-                      </label>
-                      <input
-                        type="text"
-                        value={formLinkText}
-                        onChange={(e) => setFormLinkText(e.target.value)}
-                        placeholder="যেমন: ইনস্টাগ্রামে পোস্ট ও কমেন্ট দেখুন"
-                        className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#7D2935] bg-white"
-                      />
-                    </div>
-                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-stone-700 mb-1">
-                    কাস্টমার রিভিউ ক্যাপশন / মন্তব্য
-                  </label>
-                  <textarea
-                    rows={2}
-                    value={formCaption}
-                    onChange={(e) => setFormCaption(e.target.value)}
-                    placeholder="মেহেদির রঙ ও মান নিয়ে কাস্টমারের মতামত লিখুন..."
-                    className="w-full px-3 py-2 text-sm border border-stone-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#7D2935]"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-stone-200">
-                  <button
-                    type="button"
-                    onClick={handleResetDefaults}
-                    className="text-xs text-stone-500 hover:text-stone-800 flex items-center gap-1 cursor-pointer"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>ডিফল্ট স্লাইডে রিসেট</span>
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsManagerOpen(false)}
-                      className="px-4 py-2 text-xs font-medium text-stone-700 hover:bg-stone-100 rounded-lg cursor-pointer"
-                    >
-                      বাতিল
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-5 py-2 text-xs font-semibold text-white bg-[#7D2935] hover:bg-[#5C1D26] rounded-lg shadow-2xs cursor-pointer"
-                    >
-                      {editingSlideId ? 'পরিবর্তন সেভ করুন' : 'স্লাইড যোগ করুন'}
-                    </button>
-                  </div>
-                </div>
-
-              </form>
-
-              {/* Existing Slides List with delete option */}
-              <div className="pt-4 border-t border-stone-200 space-y-3">
-                <p className="text-xs font-bold text-stone-800">বর্তমানে স্লাইডারে থাকা ছবিগুলো ({slides.length}):</p>
-                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                  {slides.map((s) => (
-                    <div
-                      key={s.id}
-                      className="flex items-center justify-between p-2.5 bg-stone-50 rounded-lg border border-stone-200 text-xs"
-                    >
-                      <div className="flex items-center gap-2.5 truncate">
-                        <img
-                          src={s.imageUrl}
-                          alt=""
-                          className="w-9 h-9 rounded-md object-cover shrink-0"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="truncate">
-                          <p className="font-semibold text-stone-900 truncate">{s.customerName}</p>
-                          <p className="text-[11px] text-stone-500 truncate">{s.stainDay}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                        <button
-                          onClick={() => handleOpenEditSlide(s)}
-                          className="p-1.5 text-stone-600 hover:text-[#7D2935] hover:bg-white rounded-md cursor-pointer"
-                          title="এডিট করুন"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSlide(s.id)}
-                          className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-white rounded-md cursor-pointer"
-                          title="মুছে ফেলুন"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
 
             </div>
@@ -605,6 +288,33 @@ export const CustomerSlider: React.FC<CustomerSliderProps> = ({ slides, onUpdate
         )}
 
       </div>
+
+      {/* Lightbox Modal */}
+      {lightboxImg && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-4"
+          onClick={() => setLightboxImg(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-white/20 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setLightboxImg(null)}
+              className="absolute top-3 right-3 p-2.5 bg-black/70 hover:bg-black text-white rounded-full transition-colors z-10 cursor-pointer border border-white/20"
+              title="বন্ধ করুন"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img
+              src={lightboxImg}
+              alt="বড় ভিউ"
+              className="max-h-[85vh] w-auto object-contain rounded-2xl"
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 };

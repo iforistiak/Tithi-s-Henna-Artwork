@@ -137,7 +137,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
 ];
 
-export const INITIAL_SLIDES: CustomerSlide[] = [
+export const CUSTOMER_SLIDES: CustomerSlide[] = [
   {
     id: 'slide-1',
     imageUrl: customerBridalImg,
@@ -145,8 +145,8 @@ export const INITIAL_SLIDES: CustomerSlide[] = [
     occasion: 'রাজশাহী সদর — ব্রাইডাল হোম সার্ভিস',
     stainDay: '৪৮ ঘণ্টা পর (Peak Dark Mahogany)',
     customLink: 'https://instagram.com/tithishennaartwork',
-    linkText: 'ইনস্টাগ্রামে তিতির কাজ দেখুন (@tithishennaartwork)',
-    caption: '“তিতি আপুর হাতের কাজ এবং মেহেন্দির কালার জাস্ট ওয়াও! বিয়ের পুরো অনুষ্ঠানে সবাই আমার হাতের রঙের প্রশংসা করেছে। কোনো চুলকানি বা কেমিক্যাল গন্ধ ছিলো না!”',
+    linkText: 'ইনস্টাগ্রামে ব্রাইডাল কাজ দেখুন (@tithishennaartwork)',
+    caption: '“তিতি আপুর হাতের কাজ এবং মেহেন্দির কালার জাস্ট ওয়াও! বিয়ের পুরো অনুষ্ঠানে সবাই আমার হাতের রঙের প্রশংসা করেছে। কোনো চুলকানি বা কেমিক্যাল গন্ধ ছাড়াই এতো গাঢ় মেহগনি রঙ!”',
   },
   {
     id: 'slide-2',
@@ -155,8 +155,8 @@ export const INITIAL_SLIDES: CustomerSlide[] = [
     occasion: 'হেতেম খাঁ, রাজশাহী — অন-সাইট পিক আপ',
     stainDay: '৩৬ ঘণ্টা পর (Rich Deep Maroon)',
     customLink: 'https://wa.me/8801601176076',
-    linkText: 'হোয়াটসঅ্যাপে তিতির সাথে কথা বলুন (01601-176076)',
-    caption: '“আমি স্টুডিও থেকে সরাসরি ২টা কোণ কালেক্ট করেছিলাম। এতো মসৃণ ফ্লো এবং এত সুন্দর গাঢ় রঙ হবে ভাবতেই পারিনি। তিতি আপু অনেক আন্তরিক।”',
+    linkText: 'হোয়াটসঅ্যাপে সরাসরি যোগাযোগ (01601-176076)',
+    caption: '“আমি হেতেম খাঁ স্টুডিও থেকে সরাসরি ফ্রেশ কোণ কালেক্ট করেছিলাম। এতো মসৃণ ফ্লো এবং এত সুন্দর গাঢ় রঙ হবে ভাবতেই পারিনি। তিতি আপু অনেক আন্তরিক ও যত্নশীল।”',
   },
   {
     id: 'slide-3',
@@ -165,10 +165,32 @@ export const INITIAL_SLIDES: CustomerSlide[] = [
     occasion: 'কাজলা, রাজশাহী — ফ্যামিলি মেহেন্দি নাইট',
     stainDay: '২৪ ঘণ্টা পর (Terracotta into Rich Maroon)',
     customLink: 'https://instagram.com/tithishennaartwork',
-    linkText: 'কাস্টমার রিল ভিডিও দেখুন',
-    caption: '“কোণের টিপস এতো মসৃণ যে একদম চুল পরিমাণ সূক্ষ্ম লাইন টানা যায়। যারা নিজেরা মেহেদি আঁকতে পছন্দ করেন তাদের জন্য Tithi\'s Henna Artwork বেস্ট চয়েস।”',
+    linkText: 'ইনস্টাগ্রামে কাস্টমার রিল ভিডিও দেখুন',
+    caption: '“কোণের টিপস এতো মসৃণ যে একদম চুল পরিমাণ সূক্ষ্ম লাইন নিখুঁতভাবে টানা যায়। ১০০% ফ্রেশ অর্গানিক পেস্টের সুবাসই আলাদা। Tithi\'s Henna Artwork সেরা চয়েস!”',
+  },
+  {
+    id: 'slide-4',
+    imageUrl: productOilImg,
+    customerName: 'সামিয়া রহমান',
+    occasion: 'উপশহর, রাজশাহী — প্রি-ওয়েডিং হলুদের মেহেন্দি',
+    stainDay: '৪৮ ঘণ্টা পর (Deep Mahogany Chocolate)',
+    customLink: 'https://instagram.com/tithishennaartwork',
+    linkText: 'তিতির ইনস্টাগ্রাম স্টোরি ও ফলাফল দেখুন',
+    caption: '“তিতির নিজস্ব আফটারকেয়ার হেনা অয়েল ব্যবহারের পর রঙ আরো উজ্জ্বল ও চকচকে হয়েছিল। প্রায় দুই সপ্তাহ পর্যন্ত হাতের ডিজাইন সুন্দরভাবে স্পষ্ট ছিল।”',
+  },
+  {
+    id: 'slide-5',
+    imageUrl: productPowderImg,
+    customerName: 'নাজমুন নাহার রিফাত',
+    occasion: 'বোয়ালিয়া, রাজশাহী — হোম সার্ভিস পার্টি মেহেন্দি',
+    stainDay: '৬০ ঘণ্টা পর (Peak Dark Henna Stain)',
+    customLink: 'https://wa.me/8801601176076',
+    linkText: 'হোম সার্ভিসের জন্য বুকিং দিন',
+    caption: '“১০০% খাঁটি সোজাত ট্রিপল-ফিল্টার্ড উপাদানে তৈরি। কোনো রকম পার্শ্বপ্রতিক্রিয়া ছাড়া বাচ্চাদের হাতেও নিশ্চিন্তে দেওয়া গেছে। মাশাল্লাহ রঙ ভীষণ চমৎকার হয়েছে।”',
   },
 ];
+
+export const INITIAL_SLIDES: CustomerSlide[] = CUSTOMER_SLIDES;
 
 export const INITIAL_REVIEWS: Review[] = [
   {

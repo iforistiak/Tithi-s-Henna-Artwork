@@ -11,26 +11,32 @@
   }
 
   body {
-    background-color: #FAF8F5;
-    color: #2D2727;
+    background-color: #FAF7F2;
+    color: #26171A;
     overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: #801D2D;
+    color: #FFFFFF;
   }
 }
 
-/* Custom delicate scrollbar */
+/* Custom delicate luxury scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #F4EFEA;
+  background: #F4ECE1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #B98B73;
-  border-radius: 4px;
+  background: #C8963E;
+  border-radius: 9999px;
+  border: 1px solid #FAF7F2;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #7D2935;
+  background: #801D2D;
 }
 
 /* Fluid glow and gentle hover animations */
@@ -60,4 +66,20 @@
 
 .animate-float {
   animation: floatGentle 4s ease-in-out infinite;
+}
+
+/* Luxury Henna Shimmer */
+@keyframes goldShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.gold-shimmer {
+  background: linear-gradient(90deg, rgba(200, 150, 62, 0.1) 0%, rgba(200, 150, 62, 0.35) 50%, rgba(200, 150, 62, 0.1) 100%);
+  background-size: 200% 100%;
+  animation: goldShimmer 3.5s infinite;
 }
