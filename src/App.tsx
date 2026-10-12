@@ -21,27 +21,14 @@ import { Footer } from './components/Footer';
 
 import {
   INITIAL_PRODUCTS,
-  INITIAL_SLIDES,
+  CUSTOMER_SLIDES,
   INITIAL_REVIEWS,
 } from './data/hennaData';
-import { Product, ProductVariant, CartItem, CustomerSlide, Review, OrderDetails } from './types/henna';
+import { Product, ProductVariant, CartItem, Review, OrderDetails } from './types/henna';
 
 export default function App() {
   // Products
   const [products] = useState<Product[]>(INITIAL_PRODUCTS);
-
-  // Customer Slides (Persistent in localStorage)
-  const [slides, setSlides] = useState<CustomerSlide[]>(() => {
-    try {
-      const saved = localStorage.getItem('tithi_customer_slides');
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return INITIAL_SLIDES;
-  });
 
   // Reviews (Persistent)
   const [reviews, setReviews] = useState<Review[]>(() => {
@@ -89,15 +76,6 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isOrderOpen, setIsOrderOpen] = useState(false);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
-
-  // Sync slides to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('tithi_customer_slides', JSON.stringify(slides));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [slides]);
 
   // Sync reviews to localStorage
   useEffect(() => {
@@ -203,7 +181,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#7B1E34] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#FAF7F2] text-[#1F1A18] selection:bg-[#7B182B] selection:text-white font-sans antialiased">
       {/* Navbar without tracking button */}
       <Navbar
         cartItems={cartItems}
@@ -232,10 +210,9 @@ export default function App() {
         {/* Quality & Ingredients Transparency */}
         <QualitySection />
 
-        {/* Customer Live Gallery Slider */}
+        {/* Customer Live Gallery Slider (Managed directly in code with Autoplay) */}
         <CustomerSlider
-          slides={slides}
-          onUpdateSlides={(newSlides) => setSlides(newSlides)}
+          slides={CUSTOMER_SLIDES}
         />
 
         {/* Portfolio & Design Showcase */}

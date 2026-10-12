@@ -60,14 +60,18 @@ export interface Review {
 
 export interface EventOffer {
   id: string;
-  type: 'offer' | 'workshop' | 'bridal_slot';
+  type: 'offer' | 'workshop' | 'bridal_slot' | 'discount_offer';
   title: string;
-  tagline: string;
-  validUntil: string;
+  tagline?: string;
+  validUntil?: string;
+  dateOrValidUntil?: string;
   code?: string;
   discountBadge?: string;
+  badge?: string;
   description: string;
-  actionText: string;
+  actionText?: string;
+  ctaText?: string;
+  terms?: string;
 }
 
 export type DeliveryMethodType = 'rajshahi_home' | 'pickup_site' | 'outside_rajshahi';

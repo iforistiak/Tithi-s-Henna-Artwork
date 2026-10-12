@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, MapPin, Phone, User, CheckCircle2, ShoppingBag, Truck, CreditCard, Sparkles, Printer, Mail, MessageCircle, Store, Send } from 'lucide-react';
+import { X, Calendar, MapPin, Phone, User, CheckCircle2, ShoppingBag, Truck, Sparkles, Printer, Mail, MessageCircle, Store, AlertCircle } from 'lucide-react';
 import { CartItem, OrderDetails, DeliveryMethodType } from '../types/henna';
 import { toBengaliNumber, formatBengaliPrice } from '../utils/bengali';
 
@@ -30,6 +30,7 @@ export const PreOrderModal: React.FC<PreOrderModalProps> = ({
   const [deliveryDate, setDeliveryDate] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'bkash' | 'nagad'>('cod');
   const [notes, setNotes] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Confirmation state
   const [confirmedOrder, setConfirmedOrder] = useState<OrderDetails | null>(null);
@@ -66,7 +67,7 @@ export const PreOrderModal: React.FC<PreOrderModalProps> = ({
     }
   };
 
-  // Compile WhatsApp & Email message templates (Changed to [নতুন অর্ডার])
+  // Compile WhatsApp & Email message templates
   const compileOrderText = (order: OrderDetails) => {
     const itemsList = order.items
       .map(
@@ -106,7 +107,11 @@ ${itemsList}
   const handleSendToWhatsApp = (order: OrderDetails) => {
     const text = compileOrderText(order);
     const url = `https://wa.me/8801601176076?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.click();
   };
 
   const handleSendToEmail = (order: OrderDetails) => {
@@ -118,18 +123,20 @@ ${itemsList}
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+
     if (!customerName.trim() || !phone.trim()) {
-      alert('অনুগ্রহ করে নাম এবং মোবাইল নম্বর প্রদান করুন।');
+      setFormError('অনুগ্রহ করে আপনার নাম এবং মোবাইল নম্বর প্রদান করুন।');
       return;
     }
 
     if (deliveryMethod !== 'pickup_site' && !address.trim()) {
-      alert('অনুগ্রহ করে ডেলিভারি ঠিকানা পূরণ করুন।');
+      setFormError('অনুগ্রহ করে আপনার ডেলিভারি ঠিকানা পূরণ করুন।');
       return;
     }
 
     if (cartItems.length === 0) {
-      alert('আপনার শপিং ব্যাগে কোনো পণ্য নেই। অনুগ্রহ করে পণ্য যোগ করে অর্ডার করুন।');
+      setFormError('আপনার শপিং ব্যাগে কোনো পণ্য নেই। অনুগ্রহ করে পণ্য যোগ করে অর্ডার করুন।');
       return;
     }
 
@@ -163,54 +170,63 @@ ${itemsList}
     setConfirmedOrder(newOrder);
     onOrderSuccess(newOrder);
 
-    // Auto-trigger WhatsApp notification
+    // Auto-trigger WhatsApp notification safely
     setTimeout(() => {
       handleSendToWhatsApp(newOrder);
-    }, 1200);
+    }, 1000);
   };
 
   const handleResetAndClose = () => {
     setConfirmedOrder(null);
+    setFormError(null);
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
-      <div className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden my-6">
+      <div className="relative bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden my-6 border border-[#E8DEC4]">
         
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#541222] to-[#7B1E34] text-white p-4 sm:p-6 flex items-center justify-between">
+        {/* Header with velvet crimson gradient */}
+        <div className="bg-gradient-to-r from-[#5A1020] via-[#7B182B] to-[#3B0713] text-white p-5 sm:p-6 flex items-center justify-between border-b border-[#E8DEC4]/20">
           <div>
-            <span className="text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-[#F59E0B] text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Tithi's Henna Artwork · অর্ডার সিস্টেম</span>
             </span>
-            <h3 className="text-xl sm:text-2xl font-bold">
+            <h3 className="text-xl sm:text-2xl font-bold mt-1">
               {confirmedOrder ? 'অর্ডার সফল হয়েছে!' : 'অনলাইনে অর্ডার ও বুকিং ফরম'}
             </h3>
           </div>
           <button
             onClick={handleResetAndClose}
-            className="p-1.5 text-stone-300 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-2 text-stone-300 hover:text-white rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+            aria-label="বন্ধ করুন"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-5 sm:p-7 max-h-[80vh] overflow-y-auto">
+        <div className="p-5 sm:p-7 max-h-[80vh] overflow-y-auto bg-[#FAF7F2]/40">
           
+          {formError && (
+            <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-2 text-rose-800 text-xs font-bold">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span>{formError}</span>
+            </div>
+          )}
+
           {confirmedOrder ? (
             /* Order Receipt / Success State */
-            <div className="space-y-6 text-stone-800">
+            <div className="space-y-6 text-[#1F1A18]">
               
               {/* Notification Banner */}
-              <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl space-y-2">
-                <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <div className="p-4 bg-[#EDF7F1] border border-[#BCE1CC] rounded-2xl space-y-2">
+                <div className="flex items-center gap-2 text-[#194E38] font-bold text-sm">
+                  <CheckCircle2 className="w-5 h-5 text-[#194E38] shrink-0" />
                   <span>অর্ডার সফলভাবে সম্পন্ন হয়েছে!</span>
                 </div>
-                <p className="text-xs text-emerald-800 leading-relaxed">
+                <p className="text-xs text-[#194E38]/90 leading-relaxed">
                   আপনার অর্ডারের পূর্ণ বিবরণ সরাসরি তিতির হোয়াটসঅ্যাপ নম্বর (<strong>01601-176076</strong>) এবং ইমেইল (<strong>jinnatislamtithi@gmail.com</strong>)-এ পাঠানোর ব্যবস্থা রাখা হয়েছে।
                 </p>
 
@@ -218,7 +234,7 @@ ${itemsList}
                 <div className="flex flex-wrap gap-2 pt-1">
                   <button
                     onClick={() => handleSendToWhatsApp(confirmedOrder)}
-                    className="px-3.5 py-2 bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                    className="px-4 py-2.5 bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer active:scale-98"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>হোয়াটসঅ্যাপে পাঠান (01601-176076)</span>
@@ -226,7 +242,7 @@ ${itemsList}
 
                   <button
                     onClick={() => handleSendToEmail(confirmedOrder)}
-                    className="px-3.5 py-2 bg-[#7B1E34] hover:bg-[#541222] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+                    className="px-4 py-2.5 bg-[#7B182B] hover:bg-[#5A1020] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer active:scale-98"
                   >
                     <Mail className="w-4 h-4" />
                     <span>ইমেইলে পাঠান (jinnatislamtithi@gmail.com)</span>
@@ -235,38 +251,38 @@ ${itemsList}
               </div>
 
               {/* Order Receipt */}
-              <div className="border border-[#EAE4DC] rounded-2xl p-4 sm:p-5 bg-[#FAF8F5] space-y-3 text-xs sm:text-sm">
-                <div className="flex justify-between border-b border-stone-200 pb-2">
-                  <span className="text-stone-500">অর্ডার নম্বর:</span>
-                  <span className="font-bold text-[#7B1E34] font-mono">#{confirmedOrder.orderId}</span>
+              <div className="border border-[#E8DEC4] rounded-2xl p-4 sm:p-5 bg-white space-y-3 text-xs sm:text-sm shadow-2xs">
+                <div className="flex justify-between border-b border-[#E8DEC4]/60 pb-2">
+                  <span className="text-stone-500 font-medium">অর্ডার নম্বর:</span>
+                  <span className="font-bold text-[#7B182B] font-mono">#{confirmedOrder.orderId}</span>
                 </div>
-                <div className="flex justify-between border-b border-stone-200 pb-2">
-                  <span className="text-stone-500">গ্রাহকের নাম:</span>
-                  <span className="font-semibold">{confirmedOrder.customerName}</span>
+                <div className="flex justify-between border-b border-[#E8DEC4]/60 pb-2">
+                  <span className="text-stone-500 font-medium">গ্রাহকের নাম:</span>
+                  <span className="font-semibold text-[#1F1A18]">{confirmedOrder.customerName}</span>
                 </div>
-                <div className="flex justify-between border-b border-stone-200 pb-2">
-                  <span className="text-stone-500">মোবাইল:</span>
-                  <span className="font-semibold">{confirmedOrder.phone}</span>
+                <div className="flex justify-between border-b border-[#E8DEC4]/60 pb-2">
+                  <span className="text-stone-500 font-medium">মোবাইল:</span>
+                  <span className="font-semibold text-[#1F1A18]">{confirmedOrder.phone}</span>
                 </div>
-                <div className="flex justify-between border-b border-stone-200 pb-2">
-                  <span className="text-stone-500">ডেলিভারি / পিকআপ পদ্ধতি:</span>
-                  <span className="font-semibold text-right max-w-xs text-[#22543D]">
+                <div className="flex justify-between border-b border-[#E8DEC4]/60 pb-2">
+                  <span className="text-stone-500 font-medium">ডেলিভারি / পিকআপ পদ্ধতি:</span>
+                  <span className="font-semibold text-right max-w-xs text-[#194E38]">
                     {confirmedOrder.deliveryMethodLabel}
                   </span>
                 </div>
                 {confirmedOrder.deliveryMethod !== 'pickup_site' && (
-                  <div className="flex justify-between border-b border-stone-200 pb-2">
-                    <span className="text-stone-500">ডেলিভারি ঠিকানা:</span>
-                    <span className="font-medium text-right max-w-xs">{confirmedOrder.address}</span>
+                  <div className="flex justify-between border-b border-[#E8DEC4]/60 pb-2">
+                    <span className="text-stone-500 font-medium">ডেলিভারি ঠিকানা:</span>
+                    <span className="font-medium text-right max-w-xs text-[#1F1A18]">{confirmedOrder.address}</span>
                   </div>
                 )}
-                <div className="flex justify-between border-b border-stone-200 pb-2">
-                  <span className="text-stone-500">অনুষ্ঠান বা বিয়ের তারিখ:</span>
-                  <span className="font-semibold text-[#7B1E34]">{confirmedOrder.eventDate}</span>
+                <div className="flex justify-between border-b border-[#E8DEC4]/60 pb-2">
+                  <span className="text-stone-500 font-medium">অনুষ্ঠান বা বিয়ের তারিখ:</span>
+                  <span className="font-semibold text-[#7B182B]">{confirmedOrder.eventDate}</span>
                 </div>
-                <div className="flex justify-between border-b border-stone-200 pb-2">
-                  <span className="text-stone-500">পেমেন্ট মেথড:</span>
-                  <span className="font-semibold">
+                <div className="flex justify-between border-b border-[#E8DEC4]/60 pb-2">
+                  <span className="text-stone-500 font-medium">পেমেন্ট মেথড:</span>
+                  <span className="font-semibold text-[#1F1A18]">
                     {confirmedOrder.paymentMethod === 'cod' && 'ক্যাশ অন ডেলিভারি / পিক-আপের সময় পরিশোধ'}
                     {confirmedOrder.paymentMethod === 'bkash' && 'বিকাশ পেমেন্ট'}
                     {confirmedOrder.paymentMethod === 'nagad' && 'নগদ পেমেন্ট'}
@@ -275,36 +291,36 @@ ${itemsList}
 
                 {/* Items List */}
                 <div className="pt-2">
-                  <p className="font-bold text-stone-800 mb-2">পণ্য তালিকা:</p>
+                  <p className="font-bold text-[#1F1A18] mb-2">পণ্য তালিকা:</p>
                   <div className="space-y-1.5">
                     {confirmedOrder.items.map((it, idx) => (
                       <div key={idx} className="flex justify-between text-stone-600 text-xs">
                         <span>{it.productName} ({it.variantName}) x {toBengaliNumber(it.quantity)}</span>
-                        <span className="font-semibold">{formatBengaliPrice(it.price * it.quantity)}</span>
+                        <span className="font-semibold text-[#1F1A18]">{formatBengaliPrice(it.price * it.quantity)}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Totals in Bengali */}
-                <div className="pt-3 border-t border-stone-200 space-y-1 text-xs">
+                <div className="pt-3 border-t border-[#E8DEC4] space-y-1.5 text-xs">
                   <div className="flex justify-between">
-                    <span>সাবটোটাল</span>
-                    <span>{formatBengaliPrice(confirmedOrder.subtotal)}</span>
+                    <span className="text-stone-600">সাবটোটাল</span>
+                    <span className="font-bold text-stone-800">{formatBengaliPrice(confirmedOrder.subtotal)}</span>
                   </div>
                   {confirmedOrder.discount > 0 && (
-                    <div className="flex justify-between text-emerald-700">
+                    <div className="flex justify-between text-[#194E38] font-bold">
                       <span>কুপন ছাড়</span>
                       <span>-{formatBengaliPrice(confirmedOrder.discount)}</span>
                     </div>
                   )}
                   <div className="flex justify-between">
-                    <span>ডেলিভারি / পিকআপ চার্জ</span>
-                    <span>{confirmedOrder.deliveryFee === 0 ? 'ফ্রি (৳০)' : formatBengaliPrice(confirmedOrder.deliveryFee)}</span>
+                    <span className="text-stone-600">ডেলিভারি / পিকআপ চার্জ</span>
+                    <span className="font-medium text-stone-800">{confirmedOrder.deliveryFee === 0 ? 'ফ্রি (৳০)' : formatBengaliPrice(confirmedOrder.deliveryFee)}</span>
                   </div>
-                  <div className="flex justify-between text-base font-bold text-[#7B1E34] pt-2 border-t border-stone-200">
+                  <div className="flex justify-between text-base font-bold text-[#7B182B] pt-2 border-t border-[#E8DEC4]">
                     <span>সর্বমোট মূল্য</span>
-                    <span className="text-lg">{formatBengaliPrice(confirmedOrder.total)}</span>
+                    <span className="text-lg font-extrabold">{formatBengaliPrice(confirmedOrder.total)}</span>
                   </div>
                 </div>
               </div>
@@ -314,7 +330,7 @@ ${itemsList}
                 <button
                   type="button"
                   onClick={() => window.print()}
-                  className="px-4 py-2 text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-xl flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2.5 text-xs font-semibold text-stone-700 bg-white hover:bg-stone-100 rounded-xl flex items-center gap-1.5 cursor-pointer border border-[#E8DEC4]"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>রিসিপ্ট প্রিন্ট / সেভ</span>
@@ -323,7 +339,7 @@ ${itemsList}
                 <button
                   type="button"
                   onClick={handleResetAndClose}
-                  className="px-6 py-2.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#7B1E34] to-[#541222] rounded-xl shadow-2xs cursor-pointer"
+                  className="px-6 py-2.5 text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#7B182B] to-[#5A1020] hover:from-[#8B1A30] hover:to-[#681120] rounded-xl shadow-xs cursor-pointer active:scale-98"
                 >
                   সম্পন্ন করুন
                 </button>
@@ -335,12 +351,12 @@ ${itemsList}
             <form onSubmit={handleSubmit} className="space-y-5">
               
               {/* Items in cart */}
-              <div className="p-3 bg-[#FAF8F5] border border-[#EAE4DC] rounded-xl flex items-center justify-between text-xs text-stone-700">
+              <div className="p-3.5 bg-white border border-[#E8DEC4] rounded-2xl flex items-center justify-between text-xs text-stone-700 shadow-2xs">
                 <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-4 h-4 text-[#7B1E34]" />
-                  <span>অর্ডার ব্যাগে আছে: <strong>{toBengaliNumber(cartItems.reduce((s, i) => s + i.quantity, 0))} টি পণ্য</strong></span>
+                  <ShoppingBag className="w-4 h-4 text-[#7B182B]" />
+                  <span>অর্ডার ব্যাগে আছে: <strong className="text-stone-900">{toBengaliNumber(cartItems.reduce((s, i) => s + i.quantity, 0))} টি পণ্য</strong></span>
                 </div>
-                <span className="font-bold text-[#7B1E34]">
+                <span className="font-bold text-[#7B182B] text-sm">
                   {formatBengaliPrice(Math.max(0, subtotal - discountAmount))}
                 </span>
               </div>
@@ -359,7 +375,7 @@ ${itemsList}
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       placeholder="যেমন: নুসরাত জাহান"
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#EAE4DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B1E34]"
+                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-white border border-[#E8DEC4] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B182B]"
                     />
                   </div>
                 </div>
@@ -376,7 +392,7 @@ ${itemsList}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="০১৬০১-১৭৬০৭৬"
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#EAE4DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B1E34]"
+                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-white border border-[#E8DEC4] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B182B]"
                     />
                   </div>
                 </div>
@@ -394,7 +410,7 @@ ${itemsList}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="example@gmail.com"
-                    className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#EAE4DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B1E34]"
+                    className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-white border border-[#E8DEC4] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B182B]"
                   />
                 </div>
               </div>
@@ -412,15 +428,15 @@ ${itemsList}
                     onClick={() => setDeliveryMethod('pickup_site')}
                     className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
                       deliveryMethod === 'pickup_site'
-                        ? 'border-[#7B1E34] bg-[#7B1E34]/5 ring-1 ring-[#7B1E34]'
-                        : 'border-[#EAE4DC] hover:border-stone-300 bg-white'
+                        ? 'border-[#7B182B] bg-[#7B182B]/5 ring-1 ring-[#7B182B]'
+                        : 'border-[#E8DEC4] hover:border-stone-300 bg-white'
                     }`}
                   >
                     <div className="flex items-center gap-1.5 text-xs font-bold text-stone-900 mb-0.5">
-                      <Store className="w-3.5 h-3.5 text-[#7B1E34]" />
+                      <Store className="w-3.5 h-3.5 text-[#7B182B]" />
                       <span>পিক আপ / কালেক্ট অন সাইট</span>
                     </div>
-                    <p className="text-[11px] text-emerald-700 font-bold">চার্জ: ফ্রি (৳০)</p>
+                    <p className="text-[11px] text-[#194E38] font-bold">চার্জ: ফ্রি (৳০)</p>
                     <p className="text-[10px] text-stone-500 mt-0.5">মহিলা কলেজ রোড, হেতেম খাঁ স্টুডিও</p>
                   </button>
 
@@ -430,12 +446,12 @@ ${itemsList}
                     onClick={() => setDeliveryMethod('rajshahi_home')}
                     className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
                       deliveryMethod === 'rajshahi_home'
-                        ? 'border-[#7B1E34] bg-[#7B1E34]/5 ring-1 ring-[#7B1E34]'
-                        : 'border-[#EAE4DC] hover:border-stone-300 bg-white'
+                        ? 'border-[#7B182B] bg-[#7B182B]/5 ring-1 ring-[#7B182B]'
+                        : 'border-[#E8DEC4] hover:border-stone-300 bg-white'
                     }`}
                   >
                     <div className="flex items-center gap-1.5 text-xs font-bold text-stone-900 mb-0.5">
-                      <Truck className="w-3.5 h-3.5 text-[#22543D]" />
+                      <Truck className="w-3.5 h-3.5 text-[#194E38]" />
                       <span>রাজশাহী সিটি হোম ডেলিভারি</span>
                     </div>
                     <p className="text-[11px] text-stone-700 font-semibold">ক্যাশ অন ডেলিভারি: ৳৬০</p>
@@ -448,12 +464,12 @@ ${itemsList}
                     onClick={() => setDeliveryMethod('outside_rajshahi')}
                     className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
                       deliveryMethod === 'outside_rajshahi'
-                        ? 'border-[#7B1E34] bg-[#7B1E34]/5 ring-1 ring-[#7B1E34]'
-                        : 'border-[#EAE4DC] hover:border-stone-300 bg-white'
+                        ? 'border-[#7B182B] bg-[#7B182B]/5 ring-1 ring-[#7B182B]'
+                        : 'border-[#E8DEC4] hover:border-stone-300 bg-white'
                     }`}
                   >
                     <div className="flex items-center gap-1.5 text-xs font-bold text-stone-900 mb-0.5">
-                      <MapPin className="w-3.5 h-3.5 text-amber-600" />
+                      <MapPin className="w-3.5 h-3.5 text-[#D97706]" />
                       <span>সারাদেশে কুরিয়ার</span>
                     </div>
                     <p className="text-[11px] text-stone-700 font-semibold">ডেলিভারি ফি: ৳১৩০</p>
@@ -477,13 +493,13 @@ ${itemsList}
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="যেমন: বাড়ি #৪, রোড #২, উপশহর / কাজলা, রাজশাহী"
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#EAE4DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B1E34]"
+                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm bg-white border border-[#E8DEC4] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B182B]"
                     />
                   </div>
                 </div>
               ) : (
-                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-start gap-2">
-                  <Store className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                <div className="p-3 bg-[#EDF7F1] border border-[#BCE1CC] rounded-xl text-xs text-[#194E38] flex items-start gap-2">
+                  <Store className="w-4 h-4 text-[#194E38] shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold">স্টুডিও পিক-আপ ঠিকানা:</span>
                     <p>মহিলা কলেজ রোড, হেতেম খাঁ, রাজশাহী। পণ্য প্রস্তুত হলে তিতি সরাসরি কল দিয়ে জানিয়ে দিবেন।</p>
@@ -504,7 +520,7 @@ ${itemsList}
                       required
                       value={eventDate}
                       onChange={(e) => setEventDate(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#EAE4DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B1E34] bg-white"
+                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#E8DEC4] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B182B] bg-white"
                     />
                   </div>
                 </div>
@@ -519,7 +535,7 @@ ${itemsList}
                       type="date"
                       value={deliveryDate}
                       onChange={(e) => setDeliveryDate(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#EAE4DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B1E34] bg-white"
+                      className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm border border-[#E8DEC4] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B182B] bg-white"
                     />
                   </div>
                 </div>
@@ -536,8 +552,8 @@ ${itemsList}
                     onClick={() => setPaymentMethod('cod')}
                     className={`p-2.5 rounded-xl border text-center cursor-pointer text-xs font-bold transition-all ${
                       paymentMethod === 'cod'
-                        ? 'border-[#7B1E34] bg-[#7B1E34]/5 text-[#7B1E34]'
-                        : 'border-[#EAE4DC] text-stone-700 hover:bg-stone-50'
+                        ? 'border-[#7B182B] bg-[#7B182B]/10 text-[#7B182B]'
+                        : 'border-[#E8DEC4] text-stone-700 bg-white hover:bg-stone-50'
                     }`}
                   >
                     ক্যাশ অন ডেলিভারি / পিকআপ
@@ -548,8 +564,8 @@ ${itemsList}
                     onClick={() => setPaymentMethod('bkash')}
                     className={`p-2.5 rounded-xl border text-center cursor-pointer text-xs font-bold transition-all ${
                       paymentMethod === 'bkash'
-                        ? 'border-[#7B1E34] bg-[#7B1E34]/5 text-[#7B1E34]'
-                        : 'border-[#EAE4DC] text-stone-700 hover:bg-stone-50'
+                        ? 'border-[#7B182B] bg-[#7B182B]/10 text-[#7B182B]'
+                        : 'border-[#E8DEC4] text-stone-700 bg-white hover:bg-stone-50'
                     }`}
                   >
                     বিকাশ (bKash)
@@ -560,8 +576,8 @@ ${itemsList}
                     onClick={() => setPaymentMethod('nagad')}
                     className={`p-2.5 rounded-xl border text-center cursor-pointer text-xs font-bold transition-all ${
                       paymentMethod === 'nagad'
-                        ? 'border-[#7B1E34] bg-[#7B1E34]/5 text-[#7B1E34]'
-                        : 'border-[#EAE4DC] text-stone-700 hover:bg-stone-50'
+                        ? 'border-[#7B182B] bg-[#7B182B]/10 text-[#7B182B]'
+                        : 'border-[#E8DEC4] text-stone-700 bg-white hover:bg-stone-50'
                     }`}
                   >
                     নগদ (Nagad)
@@ -579,14 +595,14 @@ ${itemsList}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="যেমন: ব্রাইডাল হোম সার্ভিসের জন্য সময়, অতিরিক্ত পিন টিপ লাগবে..."
-                  className="w-full px-3 py-2 text-xs sm:text-sm border border-[#EAE4DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B1E34]"
+                  className="w-full px-3 py-2 text-xs sm:text-sm bg-white border border-[#E8DEC4] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#7B182B]"
                 />
               </div>
 
               {/* Notification Guarantee Note */}
-              <div className="p-3 bg-stone-100 rounded-xl text-[11px] text-stone-600 space-y-1">
+              <div className="p-3 bg-white border border-[#E8DEC4] rounded-xl text-[11px] text-stone-600 space-y-1 shadow-2xs">
                 <p className="font-bold text-stone-800 flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5 text-[#7B1E34]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#7B182B]" />
                   <span>সরাসরি নোটিফিকেশন সিস্টেম:</span>
                 </p>
                 <p>
@@ -595,10 +611,10 @@ ${itemsList}
               </div>
 
               {/* Grand Total & Submit */}
-              <div className="pt-3 border-t border-stone-200 flex items-center justify-between">
+              <div className="pt-3 border-t border-[#E8DEC4] flex items-center justify-between">
                 <div>
                   <span className="text-xs text-stone-500 font-medium">সর্বমোট প্রদেয়:</span>
-                  <p className="text-xl sm:text-2xl font-bold text-[#7B1E34]">
+                  <p className="text-xl sm:text-2xl font-bold text-[#7B182B]">
                     {formatBengaliPrice(grandTotal)}
                   </p>
                 </div>
@@ -607,13 +623,13 @@ ${itemsList}
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 text-xs font-semibold text-stone-600 hover:bg-stone-100 rounded-xl cursor-pointer"
+                    className="px-4 py-2.5 text-xs font-semibold text-stone-600 hover:bg-stone-100 rounded-xl cursor-pointer"
                   >
                     বাতিল
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-gradient-to-r from-[#7B1E34] to-[#541222] hover:from-[#8D233C] hover:to-[#611628] text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm cursor-pointer"
+                    className="px-6 py-2.5 bg-gradient-to-r from-[#7B182B] via-[#8B1A30] to-[#5A1020] hover:from-[#8B1A30] hover:to-[#681120] text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs cursor-pointer active:scale-98 transition-all"
                   >
                     অর্ডার কনফার্ম করুন
                   </button>
