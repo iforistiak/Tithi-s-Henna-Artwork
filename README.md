@@ -45,39 +45,6 @@
 
 ---
 
-## 🚀 লোকাল সেটআপ ও রান করার নিয়ম (Getting Started)
-
-```bash
-# ১. ডিপেন্ডেন্সি ইনস্টল করুন
-npm install
-
-# ২. ডেভেলপমেন্ট সার্ভার চালু করুন
-npm run dev
-
-# ৩. প্রোডাকশন বিল্ড তৈরি করুন
-npm run build
-```
-
----
-
-## 📤 গিটহাব রিপোজিটরিতে আপলোড করার কমান্ড (Push to GitHub)
-
-আপনার গিটহাবে **`Tithis-Henna-Artwork`** নামে একটি নতুন রিপোজিটরি তৈরি করে টার্মিনালে নিচের কমান্ডগুলো রান করুন:
-
-```bash
-# গিট ইনিশিয়ালাইজ করুন (যদি পূর্বে না করা থাকে)
-git init
-git add .
-git commit -m "Initial commit: Tithi's Henna Artwork deployed by MD. ISTIAK ISLAM"
-
-# আপনার গিটহাব রিপোজিটরির রিমোট লিংক যোগ করুন
-git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/Tithis-Henna-Artwork.git
-
-# মেইন ব্রাঞ্চ পুশ করুন
-git branch -M main
-git push -u origin main
-```
-
 ---
 
 **Deployed By — MD. ISTIAK ISLAM**  
