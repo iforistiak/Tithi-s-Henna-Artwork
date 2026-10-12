@@ -14,7 +14,6 @@ import { ReviewsSection } from './components/ReviewsSection';
 import { EventsOffers } from './components/EventsOffers';
 import { CartDrawer } from './components/CartDrawer';
 import { PreOrderModal } from './components/PreOrderModal';
-import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { MobileBottomBar } from './components/MobileBottomBar';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
@@ -57,7 +56,7 @@ export default function App() {
     return INITIAL_REVIEWS;
   });
 
-  // Shopping Cart (Persistent)
+  // Shopping Cart: MUST start empty [] for new visitors so cart shows 0 (zero)
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     try {
       const saved = localStorage.getItem('tithi_cart');
@@ -67,19 +66,7 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-    // Pre-populate with 2 regular cones
-    return [
-      {
-        productId: 'prod-1',
-        productName: "Tithi's স্পেশাল অর্গানিক হেনা কোণ",
-        productImage: INITIAL_PRODUCTS[0].image,
-        variantId: 'v1-2',
-        variantName: 'রেগুলার কোণ (Standard)',
-        variantWeight: '৩৫ গ্রাম',
-        price: 140,
-        quantity: 2,
-      },
-    ];
+    return [];
   });
 
   // Orders history (Persistent)
@@ -92,39 +79,7 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-    return [
-      {
-        orderId: 'TITHI-2048',
-        customerName: 'তানজিলা ইসলাম',
-        phone: '০১৬০১-১৭৬০৭৬',
-        email: 'jinnatislamtithi@gmail.com',
-        address: 'হেতেম খাঁ, মহিলা কলেজ রোড, রাজশাহী',
-        deliveryMethod: 'pickup_site',
-        deliveryMethodLabel: 'পিক আপ / কালেক্ট অন সাইট (হেতেম খাঁ স্টুডিও)',
-        eventDate: '২০২৬-১১-০৫',
-        deliveryDate: '২০২৬-১১-০৩',
-        paymentMethod: 'cod',
-        notes: 'ব্রাইডাল ফ্রেশ ব্যাচ স্টুডিও থেকে পিক আপ',
-        items: [
-          {
-            productId: 'prod-2',
-            productName: "Tithi's রয়্যাল ব্রাইডাল হেনা কিট",
-            productImage: INITIAL_PRODUCTS[1].image,
-            variantId: 'v2-2',
-            variantName: 'রয়্যাল ব্রাইডাল কিট',
-            variantWeight: 'কমপ্লিট ব্রাইডাল সেট',
-            price: 1150,
-            quantity: 1,
-          },
-        ],
-        subtotal: 1150,
-        deliveryFee: 0,
-        discount: 115,
-        total: 1035,
-        status: 'preparing_batch',
-        createdAt: '১০ অক্টোবর ২০২৬',
-      },
-    ];
+    return [];
   });
 
   // Coupons
@@ -132,8 +87,7 @@ export default function App() {
 
   // Modals visibility
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isPreOrderOpen, setIsPreOrderOpen] = useState(false);
-  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
+  const [isOrderOpen, setIsOrderOpen] = useState(false);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
 
   // Sync slides to localStorage
@@ -223,10 +177,10 @@ export default function App() {
     );
   };
 
-  // Instant pre-order from a single card
-  const handleInstantPreOrder = (product: Product, variant: ProductVariant) => {
+  // Instant order from product card
+  const handleInstantOrder = (product: Product, variant: ProductVariant) => {
     handleAddToCart(product, variant);
-    setIsPreOrderOpen(true);
+    setIsOrderOpen(true);
   };
 
   // Coupon handling
@@ -249,20 +203,18 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#7D2935] selection:text-white">
-      {/* Navbar */}
+    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-stone-900 selection:bg-[#7B1E34] selection:text-white">
+      {/* Navbar without tracking button */}
       <Navbar
         cartItems={cartItems}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenPreOrder={() => setIsPreOrderOpen(true)}
-        onOpenTracking={() => setIsTrackingOpen(true)}
-        activeSection="home"
+        onOpenOrder={() => setIsOrderOpen(true)}
       />
 
       <main className="flex-1">
         {/* Hero Section */}
         <Hero
-          onOpenPreOrder={() => setIsPreOrderOpen(true)}
+          onOpenOrder={() => setIsOrderOpen(true)}
           onExploreProducts={() => {
             const el = document.getElementById('products');
             el?.scrollIntoView({ behavior: 'smooth' });
@@ -273,14 +225,14 @@ export default function App() {
         <ProductCatalog
           products={products}
           onAddToCart={handleAddToCart}
-          onInstantPreOrder={handleInstantPreOrder}
+          onInstantOrder={handleInstantOrder}
           onViewProductDetails={(p) => setDetailProduct(p)}
         />
 
         {/* Quality & Ingredients Transparency */}
         <QualitySection />
 
-        {/* Customer Live Gallery Slider (Editable with Custom Links) */}
+        {/* Customer Live Gallery Slider */}
         <CustomerSlider
           slides={slides}
           onUpdateSlides={(newSlides) => setSlides(newSlides)}
@@ -288,7 +240,7 @@ export default function App() {
 
         {/* Portfolio & Design Showcase */}
         <PortfolioGallery
-          onPreOrderForDesign={() => setIsPreOrderOpen(true)}
+          onOrderForDesign={() => setIsOrderOpen(true)}
         />
 
         {/* Customer Reviews Section */}
@@ -299,7 +251,7 @@ export default function App() {
 
         {/* Events, Workshops & Special Offers */}
         <EventsOffers
-          onPreOrderClick={() => setIsPreOrderOpen(true)}
+          onOrderClick={() => setIsOrderOpen(true)}
           onApplyCouponToCart={(code) => {
             setAppliedCoupon(code);
             setIsCartOpen(true);
@@ -314,16 +266,16 @@ export default function App() {
         items={cartItems}
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveItem}
-        onProceedToCheckout={() => setIsPreOrderOpen(true)}
+        onProceedToCheckout={() => setIsOrderOpen(true)}
         couponCode={appliedCoupon}
         discountAmount={discountAmount}
         onApplyCoupon={handleApplyCoupon}
       />
 
-      {/* Pre-Order Checkout Modal with WhatsApp and Email Notifications */}
+      {/* Order Checkout Modal */}
       <PreOrderModal
-        isOpen={isPreOrderOpen}
-        onClose={() => setIsPreOrderOpen(false)}
+        isOpen={isOrderOpen}
+        onClose={() => setIsOrderOpen(false)}
         cartItems={
           cartItems.length > 0
             ? cartItems
@@ -336,7 +288,7 @@ export default function App() {
                   variantName: products[0].variants[1].name,
                   variantWeight: products[0].variants[1].weight,
                   price: products[0].variants[1].price,
-                  quantity: 2,
+                  quantity: 1,
                 },
               ]
         }
@@ -344,35 +296,27 @@ export default function App() {
         onOrderSuccess={handleOrderSuccess}
       />
 
-      {/* Order Tracking Modal */}
-      <OrderTrackingModal
-        isOpen={isTrackingOpen}
-        onClose={() => setIsTrackingOpen(false)}
-        savedOrders={savedOrders}
-      />
-
       {/* Product Detail Modal */}
       <ProductDetailModal
         product={detailProduct}
         onClose={() => setDetailProduct(null)}
         onAddToCart={handleAddToCart}
-        onPreOrder={handleInstantPreOrder}
+        onOrder={handleInstantOrder}
       />
 
       {/* Mobile-Friendly Quick Bottom Navigation */}
       <MobileBottomBar
         cartItems={cartItems}
         onOpenCart={() => setIsCartOpen(true)}
-        onOpenPreOrder={() => setIsPreOrderOpen(true)}
+        onOpenOrder={() => setIsOrderOpen(true)}
       />
 
       {/* Floating WhatsApp Action Button (01601-176076) */}
       <FloatingWhatsApp />
 
-      {/* Footer with Rajshahi & Tithi's Henna Artwork Info */}
+      {/* Footer without tracking link */}
       <Footer
-        onOpenTracking={() => setIsTrackingOpen(true)}
-        onOpenPreOrder={() => setIsPreOrderOpen(true)}
+        onOpenOrder={() => setIsOrderOpen(true)}
       />
     </div>
   );

@@ -6,14 +6,14 @@ import { toBengaliNumber, formatBengaliPrice } from '../utils/bengali';
 interface ProductCatalogProps {
   products: Product[];
   onAddToCart: (product: Product, variant: ProductVariant) => void;
-  onInstantPreOrder: (product: Product, variant: ProductVariant) => void;
+  onInstantOrder: (product: Product, variant: ProductVariant) => void;
   onViewProductDetails: (product: Product) => void;
 }
 
 export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   products,
   onAddToCart,
-  onInstantPreOrder,
+  onInstantOrder,
   onViewProductDetails,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -59,12 +59,12 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   };
 
   return (
-    <section id="products" className="py-16 sm:py-24 bg-[#FAF8F5] border-b border-stone-200">
+    <section id="products" className="py-16 sm:py-24 bg-[#FAF8F5] border-b border-[#EAE4DC]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Toast Alert */}
         {addedToast && (
-          <div className="fixed bottom-24 sm:bottom-6 left-4 sm:left-6 z-50 bg-[#2D5337] text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2.5 text-xs sm:text-sm font-semibold animate-in slide-in-from-bottom-3 duration-200">
+          <div className="fixed bottom-24 sm:bottom-6 left-4 sm:left-6 z-50 bg-[#22543D] text-white px-4.5 py-3 rounded-xl shadow-lg flex items-center gap-2.5 text-xs sm:text-sm font-semibold animate-in slide-in-from-bottom-3 duration-200 border border-emerald-400/40">
             <Check className="w-4 h-4 text-emerald-300 shrink-0" />
             <span>{addedToast}</span>
           </div>
@@ -73,7 +73,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
         {/* Section Title */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wider text-[#7D2935] font-semibold">
+            <p className="text-xs uppercase tracking-wider text-[#7B1E34] font-bold">
               Tithi's Henna Artwork · ফ্রেশ কালেকশন
             </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
@@ -85,9 +85,9 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
           </div>
 
           {/* Fresh batch note */}
-          <div className="text-xs text-stone-600 bg-white border border-stone-200/90 py-2 px-3.5 rounded-lg shrink-0 self-start md:self-auto flex items-center gap-2 shadow-2xs">
+          <div className="text-xs text-stone-700 bg-white border border-[#EAE4DC] py-2 px-3.5 rounded-xl shrink-0 self-start md:self-auto flex items-center gap-2 shadow-2xs">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span>রাজশাহী স্টুডিওতে প্রতিদিন ফ্রেশ তৈরি · পিক-আপ ও হোম ডেলিভারি</span>
+            <span>রাজশাহী স্টুডিওতে প্রতিদিন ফ্রেশ তৈরি · পিক-আপ ও অর্ডার চালু</span>
           </div>
         </div>
 
@@ -97,10 +97,10 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-4 py-2 text-xs sm:text-sm font-medium rounded-lg whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl whitespace-nowrap transition-all cursor-pointer ${
                 selectedCategory === cat.id
-                  ? 'bg-[#7D2935] text-white shadow-xs font-semibold'
-                  : 'bg-white text-stone-700 hover:bg-stone-100 border border-stone-200/80'
+                  ? 'bg-gradient-to-r from-[#7B1E34] to-[#541222] text-white shadow-xs'
+                  : 'bg-white text-stone-700 hover:bg-stone-100 border border-[#EAE4DC]'
               }`}
             >
               {cat.label}
@@ -117,7 +117,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
             return (
               <div
                 key={product.id}
-                className="bg-white rounded-2xl border border-stone-200/90 overflow-hidden shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+                className="bg-white rounded-2xl border border-[#EAE4DC] overflow-hidden shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
               >
                 {/* Product Image Area */}
                 <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
@@ -128,9 +128,9 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                     referrerPolicy="no-referrer"
                   />
 
-                  {/* Rating Tag with Bengali Number */}
-                  <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-md text-[11px] font-semibold text-stone-800 shadow-2xs flex items-center gap-1">
-                    <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                  {/* Rating Tag */}
+                  <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-md text-[11px] font-bold text-stone-800 shadow-2xs flex items-center gap-1 border border-stone-200/60">
+                    <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
                     <span>{toBengaliNumber(product.rating)}</span>
                     <span className="text-stone-400 font-normal">({toBengaliNumber(product.reviewCount)})</span>
                   </div>
@@ -138,7 +138,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                   {/* Quick View Button */}
                   <button
                     onClick={() => onViewProductDetails(product)}
-                    className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-stone-700 hover:text-[#7D2935] rounded-full shadow-2xs transition-colors cursor-pointer"
+                    className="absolute top-3 right-3 p-2 bg-white/90 hover:bg-white text-stone-700 hover:text-[#7B1E34] rounded-full shadow-2xs transition-colors cursor-pointer border border-stone-200/60"
                     title="বিস্তারিত দেখুন"
                   >
                     <Eye className="w-4 h-4" />
@@ -152,7 +152,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                       {product.subtitle}
                     </p>
 
-                    <h3 className="text-base sm:text-lg font-bold text-stone-900 group-hover:text-[#7D2935] transition-colors leading-snug">
+                    <h3 className="text-base sm:text-lg font-bold text-stone-900 group-hover:text-[#7B1E34] transition-colors leading-snug">
                       {product.name}
                     </h3>
 
@@ -160,24 +160,24 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                       {product.description}
                     </p>
 
-                    {/* Stain Tone & Shelf-life Info */}
-                    <div className="mt-3 py-2 px-3 bg-[#FAF8F5] rounded-lg text-xs space-y-1 text-stone-700 border border-stone-100">
+                    {/* Stain Tone & Shelf-life */}
+                    <div className="mt-3 py-2 px-3 bg-[#FAF8F5] rounded-xl text-xs space-y-1 text-stone-700 border border-[#EAE4DC]/80">
                       <div className="flex items-center justify-between">
                         <span className="text-stone-500">কালার টোন:</span>
-                        <span className="font-semibold text-[#7D2935]">{product.stainTone}</span>
+                        <span className="font-bold text-[#7B1E34]">{product.stainTone}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-stone-500">সংরক্ষণ:</span>
-                        <span className="text-stone-700">{product.shelfLife}</span>
+                        <span className="text-stone-700 font-medium">{product.shelfLife}</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Size / Variant Selector (Buttons) */}
+                  {/* Size Selector */}
                   <div className="space-y-1.5 pt-1">
                     <div className="flex items-center justify-between text-xs text-stone-600">
-                      <span className="font-medium text-stone-800">সাইজ নির্বাচন করুন:</span>
-                      <span className="text-[#7D2935] font-semibold">{currentVariant?.weight}</span>
+                      <span className="font-semibold text-stone-800">সাইজ নির্বাচন করুন:</span>
+                      <span className="text-[#7B1E34] font-bold">{currentVariant?.weight}</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-1.5">
@@ -188,15 +188,14 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                             key={v.id}
                             type="button"
                             onClick={() => handleSelectVariant(product.id, v.id)}
-                            className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg text-left transition-all cursor-pointer border ${
+                            className={`px-2.5 py-1.5 text-[11px] font-medium rounded-xl text-left transition-all cursor-pointer border ${
                               isSelected
-                                ? 'border-[#7D2935] bg-[#7D2935]/5 text-[#7D2935] font-bold shadow-2xs'
-                                : 'border-stone-200 hover:border-stone-300 text-stone-700 bg-white'
+                                ? 'border-[#7B1E34] bg-[#7B1E34]/5 text-[#7B1E34] font-bold shadow-2xs ring-1 ring-[#7B1E34]/30'
+                                : 'border-[#EAE4DC] hover:border-stone-300 text-stone-700 bg-white'
                             }`}
                           >
                             <div className="truncate">{v.name}</div>
-                            {/* Bengali currency format */}
-                            <div className="text-[10px] text-stone-500 font-semibold">
+                            <div className="text-[10px] text-stone-500 font-bold">
                               {formatBengaliPrice(v.price)}
                             </div>
                           </button>
@@ -209,7 +208,6 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                   <div className="pt-2 border-t border-stone-100 space-y-3">
                     <div className="flex items-baseline justify-between">
                       <div className="flex items-baseline gap-2">
-                        {/* Price in Bengali */}
                         <span className="text-2xl font-bold text-stone-900 tracking-tight">
                           {formatBengaliPrice(currentVariant.price)}
                         </span>
@@ -219,7 +217,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-emerald-700 font-medium">
+                      <span className="text-xs text-[#22543D] font-bold">
                         তাজা ব্যাচ প্রস্তুত
                       </span>
                     </div>
@@ -227,17 +225,18 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => handleAddToCartWithFeedback(product, currentVariant)}
-                        className="w-full py-2.5 px-3 text-xs sm:text-sm font-semibold rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="w-full py-2.5 px-3 text-xs sm:text-sm font-bold rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors flex items-center justify-center gap-1.5 cursor-pointer border border-stone-200/80"
                       >
                         <ShoppingBag className="w-4 h-4 text-stone-600" />
                         <span>ব্যাগে রাখুন</span>
                       </button>
 
+                      {/* Changed from প্রি-অর্ডার to সরাসরি অর্ডার */}
                       <button
-                        onClick={() => onInstantPreOrder(product, currentVariant)}
-                        className="w-full py-2.5 px-3 text-xs sm:text-sm font-semibold rounded-lg bg-[#7D2935] hover:bg-[#5C1D26] text-white transition-colors flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
+                        onClick={() => onInstantOrder(product, currentVariant)}
+                        className="w-full py-2.5 px-3 text-xs sm:text-sm font-bold rounded-xl bg-gradient-to-r from-[#7B1E34] to-[#541222] hover:from-[#8D233C] hover:to-[#611628] text-white transition-all flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
-                        <span>প্রি-অর্ডার</span>
+                        <span>সরাসরি অর্ডার</span>
                       </button>
                     </div>
                   </div>

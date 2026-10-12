@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Sparkles, ZoomIn, ArrowRight } from 'lucide-react';
+import { ZoomIn, ArrowRight } from 'lucide-react';
 import { heroHennaImg, customerBridalImg, productConesImg } from '../data/hennaData';
 
 interface PortfolioGalleryProps {
-  onPreOrderForDesign: () => void;
+  onOrderForDesign: () => void;
 }
 
 interface PortfolioItem {
@@ -17,7 +17,7 @@ interface PortfolioItem {
   description: string;
 }
 
-export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ onPreOrderForDesign }) => {
+export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ onOrderForDesign }) => {
   const [activeFilter, setActiveFilter] = useState<'all' | 'bridal' | 'arabic' | 'mandala'>('all');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -69,53 +69,53 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ onPreOrderFo
     : items.filter((item) => item.category === activeFilter);
 
   return (
-    <section id="portfolio" className="py-16 sm:py-24 bg-white border-b border-stone-200">
+    <section id="portfolio" className="py-16 sm:py-24 bg-white border-b border-[#EAE4DC]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wider text-[#7D2935] font-semibold">
+            <p className="text-xs uppercase tracking-wider text-[#7B1E34] font-bold">
               আর্টিস্টিক পোর্টফোলিও কালেকশন
             </p>
-            <h2 className="font-serif-luxury text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-stone-900 tracking-tight">
               ব্রাইডাল ও ফেস্টিভ মেহেদি নকশা ইন্সপিরেশন
             </h2>
             <p className="text-stone-600 text-sm sm:text-base max-w-xl">
-              নকশী অর্গানিক কোণ দিয়ে আঁকা চমৎকার কিছু শৈল্পিক প্যাটার্ন। যেকোনো পছন্দের ডিজাইনের জন্য প্রয়োজনীয় কোণ সরাসরি অর্ডার করতে পারেন।
+              তিতি আপুর নিজস্ব হাতে আঁকা চমৎকার কিছু শৈল্পিক প্যাটার্ন। যেকোনো পছন্দের ডিজাইনের জন্য প্রয়োজনীয় কোণ সরাসরি অর্ডার করতে পারেন।
             </p>
           </div>
 
           {/* Filter tabs */}
-          <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-lg shrink-0 self-start md:self-auto">
+          <div className="flex items-center gap-1.5 p-1 bg-stone-100 rounded-xl shrink-0 self-start md:self-auto border border-stone-200/60">
             <button
               onClick={() => setActiveFilter('all')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                activeFilter === 'all' ? 'bg-white text-stone-900 shadow-2xs font-semibold' : 'text-stone-600 hover:text-stone-900'
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                activeFilter === 'all' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600 hover:text-stone-900'
               }`}
             >
               সব নকশা
             </button>
             <button
               onClick={() => setActiveFilter('bridal')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                activeFilter === 'bridal' ? 'bg-white text-stone-900 shadow-2xs font-semibold' : 'text-stone-600 hover:text-stone-900'
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                activeFilter === 'bridal' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600 hover:text-stone-900'
               }`}
             >
               ব্রাইডাল হেভি
             </button>
             <button
               onClick={() => setActiveFilter('arabic')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                activeFilter === 'arabic' ? 'bg-white text-stone-900 shadow-2xs font-semibold' : 'text-stone-600 hover:text-stone-900'
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                activeFilter === 'arabic' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600 hover:text-stone-900'
               }`}
             >
               এরাবিক ফ্লোরাল
             </button>
             <button
               onClick={() => setActiveFilter('mandala')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer ${
-                activeFilter === 'mandala' ? 'bg-white text-stone-900 shadow-2xs font-semibold' : 'text-stone-600 hover:text-stone-900'
+              className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                activeFilter === 'mandala' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600 hover:text-stone-900'
               }`}
             >
               ম্যান্ডালা
@@ -128,7 +128,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ onPreOrderFo
           {filteredItems.map((item) => (
             <div
               key={item.id}
-              className="group bg-[#FAF8F5] rounded-xl overflow-hidden border border-stone-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
+              className="group bg-[#FAF8F5] rounded-2xl overflow-hidden border border-[#EAE4DC] shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-stone-100">
                 <img
@@ -138,13 +138,13 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ onPreOrderFo
                   referrerPolicy="no-referrer"
                 />
 
-                <div className="absolute top-2.5 left-2.5 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-white/90 text-stone-800 backdrop-blur-xs">
+                <div className="absolute top-2.5 left-2.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md bg-white/95 text-stone-800 backdrop-blur-xs border border-stone-200/50 shadow-2xs">
                   {item.categoryLabel}
                 </div>
 
                 <button
                   onClick={() => setSelectedImage(item.image)}
-                  className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white cursor-pointer"
+                  className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white cursor-pointer"
                 >
                   <span className="p-2 bg-white/20 backdrop-blur-sm rounded-full">
                     <ZoomIn className="w-5 h-5" />
@@ -154,7 +154,7 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ onPreOrderFo
 
               <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                 <div className="space-y-1">
-                  <h3 className="font-semibold text-stone-900 text-sm leading-snug group-hover:text-[#7D2935] transition-colors">
+                  <h3 className="font-bold text-stone-900 text-sm leading-snug group-hover:text-[#7B1E34] transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
@@ -168,11 +168,12 @@ export const PortfolioGallery: React.FC<PortfolioGalleryProps> = ({ onPreOrderFo
                 </div>
               </div>
 
+              {/* Order button (Changed from প্রি-অর্ডার to অর্ডার) */}
               <button
-                onClick={onPreOrderForDesign}
-                className="w-full py-2.5 px-3 bg-stone-100 hover:bg-[#7D2935] hover:text-white text-stone-700 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border-t border-stone-200"
+                onClick={onOrderForDesign}
+                className="w-full py-2.5 px-3 bg-stone-100 hover:bg-[#7B1E34] hover:text-white text-stone-800 text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer border-t border-[#EAE4DC]"
               >
-                <span>এই ডিজাইনের কোণ প্রি-অর্ডার করুন</span>
+                <span>এই ডিজাইনের কোণ অর্ডার করুন</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>

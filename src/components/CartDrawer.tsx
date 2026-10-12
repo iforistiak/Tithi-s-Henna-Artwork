@@ -85,7 +85,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </div>
                 <p className="font-semibold text-stone-800 text-base">আপনার ব্যাগ খালি</p>
                 <p className="text-xs text-stone-500 max-w-xs">
-                  পছন্দের অর্গানিক কোণ বা হেনা প্রোডাক্ট কার্টে যুক্ত করে প্রি-অর্ডার সম্পন্ন করুন।
+                  পছন্দের অর্গানিক কোণ বা হেনা প্রোডাক্ট কার্টে যুক্ত করে অর্ডার সম্পন্ন করুন।
                 </p>
               </div>
             ) : (
@@ -217,9 +217,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   onClose();
                   onProceedToCheckout();
                 }}
-                className="w-full py-3.5 px-4 bg-[#7D2935] hover:bg-[#5C1D26] text-white font-semibold text-sm rounded-lg transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-[#7B1E34] to-[#541222] hover:from-[#8D233C] hover:to-[#611628] text-white font-bold text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>অনলাইনে প্রি-অর্ডার চেকআউটে যান</span>
+                <span>অনলাইনে অর্ডার চেকআউটে যান</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
